@@ -30,6 +30,9 @@ func (o DataValuesPreProcessing) Apply() (*DataValues, []*DataValues, error) {
 
 	dataValues, libraryDataValues, err := o.apply(files)
 	if err != nil {
+		// TODO: put these back?
+		//errMsg := "Overlaying data values (in following order: %s): %s"
+		//return nil, nil, fmt.Errorf(errMsg, o.allFileDescs(files), err)
 		return nil, nil, err
 	}
 
@@ -42,6 +45,8 @@ func (o DataValuesPreProcessing) apply(files []*FileInLibrary) (*DataValues, []*
 	for _, fileInLib := range files {
 		valuesDocs, err := o.templateFile(fileInLib)
 		if err != nil {
+			// TODO: put this back?
+			//return nil, nil, fmt.Errorf("Templating file '%s': %s", fileInLib.File.RelativePath(), err)
 			return nil, nil, err
 		}
 

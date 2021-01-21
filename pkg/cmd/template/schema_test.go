@@ -640,7 +640,7 @@ vpc:
 
 		assertYTTWorkflowFailsWithErrorMessage(t, filesToProcess, expectedErr)
 	})
-	t.Run("A null definition with nullable annotation", func(t *testing.T) {
+	t.Run("null value gives hint about nullable annotation", func(t *testing.T) {
 		schemaYAML := `#@schema/match data_values=True
 ---
 vpc:

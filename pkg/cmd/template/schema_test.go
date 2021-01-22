@@ -1,6 +1,7 @@
 // Copyright 2020 VMware, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO: Should these tests be under schema package?
 package template_test
 
 import (
@@ -314,14 +315,17 @@ db_conn:
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 			files.MustNewFileFromSource(files.NewBytesSource("data_values.yml", []byte(dataValuesYAML))),
 		})
-		expectedErr := `data_values.yml:4 | port: localhost
+		expectedErr := `
+data_values.yml:4 | port: localhost
                   |       ^^^
                   |  found: string
                   |  expected: integer (by schema.yml:4)
+
 data_values.yml:6 | main: 123
                   |       ^^^
                   |  found: integer
-                  |  expected: string (by schema.yml:6)`
+                  |  expected: string (by schema.yml:6)
+`
 
 		assertYTTWorkflowFailsWithErrorMessage(t, filesToProcess, expectedErr)
 	})
@@ -345,14 +349,17 @@ clients:
 			files.MustNewFileFromSource(files.NewBytesSource("data_values.yml", []byte(dataValuesYAML))),
 		})
 
-		expectedErr := `data_values.yml:4 | - flags: secure  #! expecting a array, got a string
+		expectedErr := `
+data_values.yml:4 | - flags: secure  #! expecting a array, got a string
                   |          ^^^
                   |  found: string
                   |  expected: array element (by schema.yml:4)
+
 data_values.yml:6 | - secure  #! expecting a map, got a string
                   |   ^^^
                   |  found: string
-                  |  expected: map item (by schema.yml:5)`
+                  |  expected: map item (by schema.yml:5)
+`
 
 		assertYTTWorkflowFailsWithErrorMessage(t, filesToProcess, expectedErr)
 	})
@@ -413,7 +420,9 @@ not_in_schema: "this should fail the type check!"
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 			files.MustNewFileFromSource(files.NewBytesSource("values.yml", []byte(dataValuesYAML))),
 		})
-		expectedErr := `values.yml:2 | ---
+		// TODO: Special error case for empty schema with values. Maybe just expected: no values (hint: schema is empty: define schema values or do not use schema)?
+		expectedErr := `
+values.yml:2 | ---
              |   ^^^
              |  found: map
              |  expected: nil (by schema.yml:2)`
@@ -445,7 +454,8 @@ rendered: true`
 			files.MustNewFileFromSource(files.NewBytesSource("dataValues2.yml", []byte(dataValuesYAML2))),
 			files.MustNewFileFromSource(files.NewBytesSource("template.yml", []byte(templateYAML))),
 		})
-		expectedErr := `dataValues1.yml:3 | secret: super
+		expectedErr := `
+dataValues1.yml:3 | secret: super
                   | ^^^
                   |  unexpected key in map (as defined at schema.yml:2)`
 
@@ -590,7 +600,8 @@ vpc:
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 			files.MustNewFileFromSource(files.NewBytesSource("dataValues.yml", []byte(dataValuesYAML))),
 		})
-		expectedErr := `schema.yml:4 | subnet_ids: []
+		expectedErr := `
+schema.yml:4 | subnet_ids: []
              |             ^^^
              |  found: 0 array items
              |  expected: exactly 1 array item
@@ -614,7 +625,8 @@ vpc:
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 			files.MustNewFileFromSource(files.NewBytesSource("dataValues.yml", []byte(dataValuesYAML))),
 		})
-		expectedErr := `schema.yml:4 | subnet_ids:
+		expectedErr := `
+schema.yml:4 | subnet_ids:
              |             ^^^
              |  found: 2 array items
              |  expected: exactly 1 array item
@@ -633,7 +645,8 @@ vpc:
 		filesToProcess := files.NewSortedFiles([]*files.File{
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 		})
-		expectedErr := `schema.yml:6 | - 0
+		expectedErr := `
+schema.yml:6 | - 0
              |   ^^^
              |  found: array item with an unexpected annotation
              |  (hint: array items cannot be annotated with #@schema/nullable, if this behaviour would be valuable, please submit an issue on https://github.com/vmware-tanzu/carvel-ytt)`
@@ -650,7 +663,8 @@ vpc:
 		filesToProcess := files.NewSortedFiles([]*files.File{
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 		})
-		expectedErr := `schema.yml:4 | subnet_ids: null
+		expectedErr := `
+schema.yml:4 | subnet_ids: null
              |             ^^^
              |  expected: a non-null value, of the desired type
              |  (hint: to default to null, specify a value of the desired type and annotate with @schema/nullable)`
@@ -665,7 +679,8 @@ vpc: null
 		filesToProcess := files.NewSortedFiles([]*files.File{
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 		})
-		expectedErr := `schema.yml:3 | vpc: null
+		expectedErr := `
+schema.yml:3 | vpc: null
              |      ^^^
              |  expected: a non-null value, of the desired type
              |  (hint: to default to null, specify a value of the desired type and annotate with @schema/nullable)`
@@ -716,6 +731,7 @@ func assertYTTWorkflowFailsWithErrorMessage(t *testing.T, filesToProcess []*file
 	}
 
 	if !strings.Contains(out.Err.Error(), expectedErr) {
-		t.Fatalf("Expected an error \n%s, but got: \n%s", expectedErr, out.Err.Error())
+		diff := difflib.PPDiff(strings.Split(string(out.Err.Error()), "\n"), strings.Split(expectedErr, "\n"))
+		t.Errorf("%s", diff)
 	}
 }

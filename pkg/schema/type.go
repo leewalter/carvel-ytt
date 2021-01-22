@@ -85,8 +85,8 @@ func (m *MapType) CheckType(node yamlmeta.TypeWithValues) (chk yamlmeta.TypeChec
 		//	chk.Violations = append(chk.Violations,
 		//		NewTypeError(scalar.ValueTypeAsString(), "map item", node.GetPosition(), m.Position))
 		//} else {
-			chk.Violations = append(chk.Violations,
-				NewTypeError(node.ValueTypeAsString(), "map item", node.GetPosition(), m.Position))
+		chk.Violations = append(chk.Violations,
+			NewTypeError(node.ValueTypeAsString(), "map item", node.GetPosition(), m.Position))
 		//}
 		return
 	}
@@ -126,11 +126,11 @@ func (a ArrayType) CheckType(node yamlmeta.TypeWithValues) (chk yamlmeta.TypeChe
 		//scalar, ok := node.(*yamlmeta.Scalar)
 		//if ok {
 		//	chk.Violations = append(chk.Violations,
-				//NewTypeError(scalar.ValueTypeAsString(), typeToString(a.GetValueType), node.GetPosition(), a.Position))
+		//NewTypeError(scalar.ValueTypeAsString(), typeToString(a.GetValueType), node.GetPosition(), a.Position))
 		//} else {
-			chk.Violations = append(chk.Violations,
-				//TODO: expected can be made typeToString(a.GetValueType) ?
-				NewTypeError(node.ValueTypeAsString(), "array element", node.GetPosition(), a.Position))
+		chk.Violations = append(chk.Violations,
+			//TODO: expected can be made typeToString(a.GetValueType) ?
+			NewTypeError(node.ValueTypeAsString(), "array element", node.GetPosition(), a.Position))
 		//}
 	}
 	return

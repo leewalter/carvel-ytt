@@ -55,7 +55,8 @@ func (i invalidError) Error() string {
 	position := i.Position.AsCompactString()
 	lineContent := strings.TrimSpace(i.contents)
 	colonPosition := strings.Index(lineContent, ":")
-	result = fmt.Sprintf("%s | %s", position, lineContent)
+	result += "\n"
+	result += fmt.Sprintf("%s | %s", position, lineContent)
 	result += beginningOfLine(len(position), leftPadding(colonPosition)+" ^^^")
 	if i.Found != "" {
 		result += beginningOfLine(len(position), fmt.Sprintf("found: %s", i.Found))
@@ -100,7 +101,8 @@ func (t typeError) Error() string {
 	position := t.DataPosition.AsCompactString()
 	lineContent := strings.TrimSpace(t.contents)
 	colonPosition := strings.Index(lineContent, ":")
-	result = fmt.Sprintf("%s | %s", position, lineContent)
+	result += "\n"
+	result += fmt.Sprintf("%s | %s", position, lineContent)
 	result += beginningOfLine(len(position), leftPadding(colonPosition)+" ^^^")
 	if t.Found != "" {
 		result += beginningOfLine(len(position), fmt.Sprintf("found: %s", t.Found))
@@ -135,7 +137,8 @@ func (t unexpectedKeyError) Error() string {
 	var result string
 	position := t.DataPosition.AsCompactString()
 	lineContent := strings.TrimSpace(t.contents)
-	result = fmt.Sprintf("%s | %s", position, lineContent)
+	result += "\n"
+	result += fmt.Sprintf("%s | %s", position, lineContent)
 	result += "\n" + leftPadding(len(position)) + " | ^^^"
 	result += beginningOfLine(len(position),
 		fmt.Sprintf("unexpected key in map (as defined at %s)", t.SchemaPosition.AsCompactString()))

@@ -1,0 +1,20 @@
+name: Checks after release is published
+on:
+  release:
+    types: ['published']
+
+jobs:
+  validate-github-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: k14s/setup-k14s-action@v1
+      - run: |
+          ytt version
+          version=`ytt version`
+          release_version="${GITHUB_REF:1}"
+          if [[ "${version}" == *"$release_version"* ]];
+          then
+            exit 0
+          else
+            exit 1
+          fi

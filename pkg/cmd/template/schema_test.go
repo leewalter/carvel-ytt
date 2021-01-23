@@ -353,12 +353,12 @@ clients:
 data_values.yml:4 | - flags: secure  #! expecting a array, got a string
                   |          ^^^
                   |  found: string
-                  |  expected: array element (by schema.yml:4)
+                  |  expected: array (by schema.yml:4)
 
 data_values.yml:6 | - secure  #! expecting a map, got a string
                   |   ^^^
                   |  found: string
-                  |  expected: map item (by schema.yml:5)
+                  |  expected: map (by schema.yml:5)
 `
 
 		assertYTTWorkflowFailsWithErrorMessage(t, filesToProcess, expectedErr)
@@ -420,12 +420,8 @@ not_in_schema: "this should fail the type check!"
 			files.MustNewFileFromSource(files.NewBytesSource("schema.yml", []byte(schemaYAML))),
 			files.MustNewFileFromSource(files.NewBytesSource("values.yml", []byte(dataValuesYAML))),
 		})
-		// TODO: Special error case for empty schema with values. Maybe just expected: no values (hint: schema is empty: define schema values or do not use schema)?
-		expectedErr := `
-values.yml:2 | ---
-             |   ^^^
-             |  found: map
-             |  expected: nil (by schema.yml:2)`
+		expectedErr := "data values found in values.yml, but schema by schema.yml has none defined\n"
+		expectedErr += "(hint: define required keys in the schema, or do not enable the schema feature)"
 
 		assertYTTWorkflowFailsWithErrorMessage(t, filesToProcess, expectedErr)
 	})

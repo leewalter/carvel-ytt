@@ -469,8 +469,10 @@ non-data-values-doc`)
 		t.Fatalf("Expected RunWithFiles to fail, but was no error")
 	}
 
-	//TODO: Include the old overlaying in following order message?
-	if out.Err.Error() != "Expected data values file 'data.yml' to only have data values documents" {
+	//TODO: Include the old "overlaying in following order" message?
+	expectedError := "Expected data values file 'data.yml' to only have data values documents"
+
+	if out.Err.Error() != expectedError {
 		t.Fatalf("Expected RunWithFiles to fail, but was '%s'", out.Err)
 	}
 }

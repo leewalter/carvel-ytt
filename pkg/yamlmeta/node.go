@@ -28,7 +28,8 @@ func (ai *ArrayItem) ValueTypeAsString() string   { return typeToString(ai.Value
 func (s *Scalar) ValueTypeAsString() string       { return typeToString(s.Value) }
 
 func typeToString(value interface{}) string {
-	// TODO: this functions is duplicated
+	// TODO: this functions is extremely similar to schema.typeToString
+	//       can they be combined?
 	switch value.(type) {
 	case int:
 		return "integer"
@@ -311,7 +312,6 @@ func checkCollectionItem(value interface{}, valueType Type, position *filepos.Po
 	case *Map:
 		check := typedValue.Check()
 		chk.Violations = append(chk.Violations, check.Violations...)
-
 	case *Array:
 		check := typedValue.Check()
 		chk.Violations = append(chk.Violations, check.Violations...)
